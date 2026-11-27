@@ -1,0 +1,24 @@
+name: agilframe
+
+services:
+  core:
+    image: agilframe/core:local
+    build:
+      context: "https://github.com/GillHD/agilframe-core.git#${AGILFRAME_REF:-e49af79496ed8d4e200f520e2f7dd162bf789a7d}"
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${AGIL_HOST_PORT:-8787}:8787"
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8787"
+      AGIL_DATA_DIR: /app/.data
+      AGIL_PUBLIC_ORIGIN: "${AGIL_PUBLIC_ORIGIN:?set AGIL_PUBLIC_ORIGIN}"
+      AGIL_TOKEN_SECRET: "${AGIL_TOKEN_SECRET:?set AGIL_TOKEN_SECRET}"
+      AGIL_API_KEYS: "${AGIL_API_KEYS:?set AGIL_API_KEYS}"
+      AGIL_ALLOW_ANONYMOUS: "0"
+      AGIL_TRUST_PROXY: "${AGIL_TRUST_PROXY:-0}"
+    volumes:
+      - core-data:/app/.data
+
+volumes:
+  core-data:
