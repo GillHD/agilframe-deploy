@@ -1,18 +1,39 @@
 # AgilFrame Deploy
 
-Готовые конфигурации развёртывания AgilFrame.
+**Русский** · [English](README.en.md)
 
-[AgilFrame](https://github.com/users/GillHD/projects/1) · [Core и документация](https://github.com/GillHD/agilframe-core)
+Конфигурация Docker Compose для самостоятельного развёртывания AgilFrame Core. Compose собирает образ из репозитория Core по коммиту, указанному в `AGILFRAME_REF`, и хранит данные в именованном томе `core-data`.
 
-Исходная версия компонентов: [e49af79](https://github.com/GillHD/agilframe-core/commit/e49af79496ed8d4e200f520e2f7dd162bf789a7d). [Лицензия](LICENSE) · [Уведомления](NOTICE)
+[Проект AgilFrame](https://github.com/GillHD/agilframe) · [Core](https://github.com/GillHD/agilframe-core)
 
-## Запуск Core через Docker Compose
+## Запуск Core
 
-1. Скопируйте `.env.example` в `.env`.
-2. Установите собственный случайный секрет подписи и отдельный ключ API. Сохраните формат `ключ:организация`. Для сетевого запуска укажите HTTPS-адрес Core.
-3. Выполните `docker compose config --quiet`, затем `docker compose up -d --build`.
-4. Проверьте `http://localhost:8787/v1/health`. Данные находятся в именованном томе `core-data`.
+Установите Docker Engine и Docker Compose. В корне этого репозитория создайте файл `.env` из шаблона.
 
-Compose собирает образ из закреплённого коммита [AgilFrame](https://github.com/GillHD/agilframe-core), а порт публикуется только на loopback. Для внешнего доступа настройте reverse proxy с TLS. Включайте доверие к proxy после ограничения прямого доступа к Core. Перед обновлением сделайте резервную копию тома, затем измените `AGILFRAME_REF` на проверенный SHA и пересоберите образ.
+```bash
+cp .env.example .env
+```
 
-[Развёртывание](https://github.com/GillHD/agilframe-core/blob/main/agil/core/docs/deployment.md) · [Ноды](https://github.com/GillHD/agilframe-nodes) · [Бэкап и эксплуатация](https://github.com/GillHD/agilframe-core/blob/main/agil/core/docs/operations.md)
+Замените значения `AGIL_TOKEN_SECRET` и `AGIL_API_KEYS` собственными случайными секретами. Сохраните формат `ключ:организация` для ключа API. Для внешнего доступа укажите публичный HTTPS-адрес в `AGIL_PUBLIC_ORIGIN`.
+
+```bash
+docker compose config --quiet
+docker compose up -d --build
+curl --fail http://localhost:8787/v1/health
+```
+
+Порт Core по умолчанию доступен на `127.0.0.1:8787`. Для внешнего доступа поставьте перед ним обратный прокси-сервер с TLS. Включайте `AGIL_TRUST_PROXY` после ограничения прямого доступа к Core.
+
+## Обновление и проверка конфигурации
+
+Перед обновлением сохраните резервную копию тома `core-data`. Укажите проверенный коммит Core в `AGILFRAME_REF` и повторите проверку конфигурации и запуск с пересборкой.
+
+Для проверки синтаксиса Compose без запуска Core используйте шаблон окружения.
+
+```bash
+docker compose --env-file .env.example config --quiet
+```
+
+[Развёртывание](https://github.com/GillHD/agilframe-core/blob/main/agil/core/docs/deployment.md) · [Резервное копирование и эксплуатация](https://github.com/GillHD/agilframe-core/blob/main/agil/core/docs/operations.md) · [Медианоды](https://github.com/GillHD/agilframe-nodes)
+
+[Лицензия](LICENSE) · [Уведомления](NOTICE) · [Как внести вклад](CONTRIBUTING.md) · [Безопасность](SECURITY.md)
